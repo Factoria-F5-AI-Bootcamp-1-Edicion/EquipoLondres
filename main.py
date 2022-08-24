@@ -2,6 +2,8 @@
 
 import streamlit as st
 import folium
+from folium.plugins import MarkerCluster
+from folium import plugins
 import streamlit_folium
 import streamlit.components.v1 as components
 from streamlit_folium import st_folium
@@ -127,10 +129,18 @@ st.markdown(f"Numero total de viviendas: {viviendas_por_precio} ")
 # Funcones del menu
 def scatterplot():
 
-    fig = plt.figure(figsize=(10, 4))
-    sns.color_palette("hls", 5)
-    sns.scatterplot(data=leer_data, x="latitude", y="longitude", hue="price")
-    st.pyplot(fig)
+    print('Habitaciones con mayor número de reseñas')
+    Long=-0.12569
+    Lat=51.53105
+    mapdf1=folium.Map([Lat,Long],zoom_start=10,)
+
+    mapdf1_rooms_map=plugins.MarkerCluster().add_to(mapdf1)
+
+    for lat,lon,label in zip(df1.latitude,df1.longitude,df1.name):
+        folium.Marker(location=[lat,lon],icon=folium.Icon(icon='home'),popup=label).add_to(mapdf1_rooms_map)
+    mapdf1.add_child(mapdf1_rooms_map)
+
+    mapdf1
 
 
 def nosotros():
