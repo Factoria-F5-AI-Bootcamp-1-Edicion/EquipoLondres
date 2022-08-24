@@ -16,6 +16,8 @@ from PIL import Image
 import seaborn as sns
 import pydeck as pdk
 from streamlit_card import card
+from wordcloud import WordCloud, ImageColorGenerator
+import plotly.express as px
 # extra
 import graficas
 
@@ -27,9 +29,6 @@ def main():
     st.markdown('<style>' + open('./styles.css').read() +
                 '</style>', unsafe_allow_html=True)
     
-
-
-
 
 # Contenedores
 Head = st.container()
@@ -125,23 +124,11 @@ for i in leer_data['price']:
 st.markdown(f"Numero total de viviendas: {viviendas_por_precio} ")
 
 
-
 # Funcones del menu
 def scatterplot():
+    print('123')
 
-    print('Habitaciones con mayor número de reseñas')
-    Long=-0.12569
-    Lat=51.53105
-    mapdf1=folium.Map([Lat,Long],zoom_start=10,)
-
-    mapdf1_rooms_map=plugins.MarkerCluster().add_to(mapdf1)
-
-    for lat,lon,label in zip(df1.latitude,df1.longitude,df1.name):
-        folium.Marker(location=[lat,lon],icon=folium.Icon(icon='home'),popup=label).add_to(mapdf1_rooms_map)
-    mapdf1.add_child(mapdf1_rooms_map)
-
-    mapdf1
-
+scatterplot() #borrar prueba
 
 def nosotros():
     # Render the h1 block, contained in a frame of size 200x200.
