@@ -1,5 +1,14 @@
 # importar librerias
 
+from streamlit_embedcode import github_gist
+from streamlit_observable import observable
+from streamlit_echarts import Map
+from streamlit_agraph import TripleStore, agraph
+from rdflib import Graph
+from streamlit_d3_demo import d3_line
+import random
+#from streamlit_agraph import GraphAlgos
+import streamlit
 import streamlit as st
 import folium
 
@@ -37,12 +46,6 @@ def main():
     # Configuracion de css
     st.markdown('<style>' + open('./styles.css').read() +
                 '</style>', unsafe_allow_html=True)
-    
-
-
-
-
-
 
 
 # Contenedores
@@ -55,7 +58,7 @@ with Head:
     st.title('Análisis de precios')
     st.header('Londres AirBnB')
     st.text('Ciency tu consultora de confianza.')
-#video
+# video
     video_file = open('istockphoto-1258113642-640_adpp_is.mp4', 'rb')
     video_bytes = video_file.read()
 
@@ -78,7 +81,6 @@ with Footer:
     st.text('Grafica resultante.')
 
 
-
 # DataFrame
 token = "pk.eyJ1Ijoid2VubGxhIiwiYSI6ImNsNnhmcjFmcjBzbjQzZHFsNXB3YXc0cHAifQ.Yhi8lAIuVUiXA8TltkAMIw"
 path_to_data = ('london_airbnb.csv')
@@ -87,7 +89,7 @@ path_to_data = ('london_airbnb.csv')
 @st.cache(persist=True)
 def load_data():
     df = pd.read_csv(path_to_data)
-    
+
     # Comienzo la limpieza de datos no definitiva
     df.drop(["host_id", "name", "host_name", ], axis=1, inplace=True)
     df.dropna(how='any')
@@ -102,8 +104,10 @@ leer_data = load_data()
 mapa = folium.Map(location=[51.509865, -0.118092], zoom_start=12)
 i = 0
 
+
 # Busca por precio
 precios_londres = st.slider("Precio locales:", 10, 1000)
+
 
 # print(len(leer_data['price']))
 
@@ -127,7 +131,7 @@ st_data = st_folium(mapa, width=625)
 
 
 # pintamos dataframe
-# st.dataframe(leer_data)  Descomentar en la presentacion, gasta muchos recursos.
+st.dataframe(leer_data)  #Descomentar en la presentacion, gasta muchos recursos.
 
 
 viviendas_por_precio = 0
@@ -139,54 +143,21 @@ for i in leer_data['price']:
 st.markdown(f"Numero total de viviendas: {viviendas_por_precio} ")
 
 
-
-
-
-
 # Funcones del menu
 def scatterplot():
     print('123')
-
 
     fig = plt.figure(figsize=(10, 4))
     sns.color_palette("hls", 5)
     sns.scatterplot(data=leer_data, x="latitude", y="longitude", hue="price")
     st.pyplot(fig)
 
+
 AgGrid(leer_data)
 
-#mapa?
-nodes = []
-edges = []
-nodes.append( Node(id="Spiderman", 
-                   label="Peter Parker", 
-                   size=400, 
-                   svg="http://marvel-force-chart.surge.sh/marvel_force_chart_img/top_spiderman.png") 
-            ) # includes **kwargs
-nodes.append( Node(id="Captain_Marvel", 
-                   size=400, 
-                   svg="http://marvel-force-chart.surge.sh/marvel_force_chart_img/top_captainmarvel.png") 
-            )
-edges.append( Edge(source="Captain_Marvel", 
-                   label="friend_of", 
-                   target="Spiderman", 
-                   type="CURVE_SMOOTH") 
-            ) # includes **kwargs
+# mapa?
 
-config = Config(width=500, 
-                height=500, 
-                directed=True,
-                nodeHighlightBehavior=True, 
-                highlightColor="#F7A7A6", # or "blue"
-                collapsible=True,
-                node={'labelProperty':'label'},
-                link={'labelProperty': 'label', 'renderLabel': True}
-                # **kwargs e.g. node_size=1000 or node_color="blue"
-                ) 
 
-return_value = agraph(nodes=nodes, 
-                      edges=edges, 
-                      config=config)
 
 # text colores
 annotated_text(
@@ -205,84 +176,53 @@ annotated_text(
 )
 
 
-#grafos 3d
-import random
-from streamlit_d3_demo import d3_line
+# grafos 3d
+
 
 def generate_random_data(x_r, y_r):
     return list(zip(range(x_r), [random.randint(0, y_r) for _ in range(x_r)]))
 
-d3_line(generate_random_data(20, 500), circle_radius=15, circle_color="#6495ed")
+
+d3_line(generate_random_data(20, 500),
+        circle_radius=15, circle_color="#6495ed")
 
 # otro
-from rdflib import Graph
-from streamlit_agraph import TripleStore, agraph
+scatterplot()  # borrar prueba
 
-graph = Graph()
-graph.parse("http://www.w3.org/People/Berners-Lee/card")
-store = TripleStore()
+import altair as alt
+import streamlit as st
+import pandas as pd
+import numpy as np
 
-for subj, pred, obj in graph:
-    store.add_triple(subj, pred, obj, "")
-    
-agraph(list(store.getNodes()), list(store.getEdges()), config)
+from streamlit_vega_lite import vega_lite_component, altair_component
 
-#
-
-
-algos = GraphAlgos(store)
-algos.shortest_path("Spiderman", "Captain_Marvel")
-algos.density()
-
-#
-from streamlit_echarts import Map
-with open("USA.json", "r") as f:
-    map = Map(
-        "USA",
-        json.loads(f.read()),
-        {
-            "Alaska": {"left": -131, "top": 25, "width": 15},
-            "Hawaii": {"left": -110, "top": 28, "width": 5},
-            "Puerto Rico": {"left": -76, "top": 26, "width": 2},
-        },
-    )
-options = {...}
-st_echarts(options, map=map)
-
-
-
-#
-
-from streamlit_observable import observable
+hist_data = pd.DataFrame(np.random.normal(42, 10, (200, 1)), columns=["x"])
 
 @st.cache
-def get_trader_joes():
-    # a lot of code...
-    return df
+def altair_histogram():
+    brushed = alt.selection_interval(encodings=["x"], name="brushed")
 
-df = get_trader_joes()
+    return (
+        alt.Chart(hist_data)
+        .mark_bar()
+        .encode(alt.X("x:Q", bin=True), y="count()")
+        .add_selection(brushed)
+    )
 
-observable("Trader Joes Voronoi Map", 
-    notebook="@mbostock/u-s-voronoi-map-o-matic", 
-    targets=["map"],
-    redefine={
-        "data": df[["longitude", "latitude", "name"]].to_dict(orient="records")
-    }
-)
+event_dict = altair_component(altair_chart=altair_histogram())
 
-
-from streamlit_embedcode import github_gist
-
-github_gist("https://gist.github.com/randyzwitch/be8c5e9fb5b8e7b046afebcac12e5087/")
-
-scatterplot() #borrar prueba
+r = event_dict.get("x")
+if r:
+    filtered = hist_data[(hist_data.x >= r[0]) & (hist_data.x < r[1])]
+    st.write(filtered)
 
 
+    
 def nosotros():
     # Render the h1 block, contained in a frame of size 200x200.
     st.title('THE TEAM')
     components.html(
-'''
+        '''
 <div class="row">
   <div class="col-sm-6">
     <div class="card">
@@ -320,19 +260,19 @@ def nosotros():
     )
 
 
-#res = card(
+# res = card(
 #    title = "Chen",
 #    text="CEO ",
-#    image="https://placekitten.com/100/100",        
-#)
+#    image="https://placekitten.com/100/100",
+# )
 
-#print(res)
+# print(res)
 
 # iframe
 #import streamlit.components.v1 as components
 # components.iframe("https://trade.mql5.com/trade?servers=SomeBroker1-Demo,SomeBroker1-Live,SomeBroker2-Demo,SomeBroker2-Live&amp;trade_server=SomeBroker-Demo&amp;startup_mode=open_demo&amp;lang=en&amp;save_password=off")
 
-#################################################################################### 
+####################################################################################
 st.sidebar.title("Configuración")
 # Mostrar por barrio
 # Obtengo los elementos unicos de la columna room_type
@@ -348,31 +288,22 @@ if st.sidebar.checkbox("Mostrar grafica de Barrio", False, key=1):
 ##################################################################################
 
 # Configuración del Menu
-page = st.sidebar.selectbox( "Seleciona grafica B",
-    [
-        "Elige", "scatterplot", "nosotros"
-    ]
-)
+page = st.sidebar.selectbox("Seleciona grafica B",
+                            [
+                                "Elige", "scatterplot", "nosotros"
+                            ]
+                            )
 if page == 'scatterplot':
     scatterplot()
 if page == 'nosotros':
     nosotros()
 
 
-
-
-
-
-
-
-
-
-
 # print(graficas.yuan("Chen"))
 graficas.yuan(leer_data, token)
 
 
-#nosotros()
+# nosotros()
 
 # fn del programa
 if __name__ == '__main__':
