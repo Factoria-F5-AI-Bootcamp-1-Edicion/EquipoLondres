@@ -2,8 +2,11 @@
 
 import streamlit as st
 import folium
+
+
 from folium.plugins import MarkerCluster
 from folium import plugins
+
 import streamlit_folium
 import streamlit.components.v1 as components
 from streamlit_folium import st_folium
@@ -16,8 +19,14 @@ from PIL import Image
 import seaborn as sns
 import pydeck as pdk
 from streamlit_card import card
+
+from st_aggrid import AgGrid
+from streamlit_agraph import agraph, Node, Edge, Config
+from annotated_text import annotated_text
+
 from wordcloud import WordCloud, ImageColorGenerator
 import plotly.express as px
+
 # extra
 import graficas
 
@@ -29,6 +38,12 @@ def main():
     st.markdown('<style>' + open('./styles.css').read() +
                 '</style>', unsafe_allow_html=True)
     
+
+
+
+
+
+
 
 # Contenedores
 Head = st.container()
@@ -124,11 +139,144 @@ for i in leer_data['price']:
 st.markdown(f"Numero total de viviendas: {viviendas_por_precio} ")
 
 
+
+
+
+
 # Funcones del menu
 def scatterplot():
     print('123')
 
+
+    fig = plt.figure(figsize=(10, 4))
+    sns.color_palette("hls", 5)
+    sns.scatterplot(data=leer_data, x="latitude", y="longitude", hue="price")
+    st.pyplot(fig)
+
+AgGrid(leer_data)
+
+#mapa?
+nodes = []
+edges = []
+nodes.append( Node(id="Spiderman", 
+                   label="Peter Parker", 
+                   size=400, 
+                   svg="http://marvel-force-chart.surge.sh/marvel_force_chart_img/top_spiderman.png") 
+            ) # includes **kwargs
+nodes.append( Node(id="Captain_Marvel", 
+                   size=400, 
+                   svg="http://marvel-force-chart.surge.sh/marvel_force_chart_img/top_captainmarvel.png") 
+            )
+edges.append( Edge(source="Captain_Marvel", 
+                   label="friend_of", 
+                   target="Spiderman", 
+                   type="CURVE_SMOOTH") 
+            ) # includes **kwargs
+
+config = Config(width=500, 
+                height=500, 
+                directed=True,
+                nodeHighlightBehavior=True, 
+                highlightColor="#F7A7A6", # or "blue"
+                collapsible=True,
+                node={'labelProperty':'label'},
+                link={'labelProperty': 'label', 'renderLabel': True}
+                # **kwargs e.g. node_size=1000 or node_color="blue"
+                ) 
+
+return_value = agraph(nodes=nodes, 
+                      edges=edges, 
+                      config=config)
+
+# text colores
+annotated_text(
+    "This ",
+    ("is", "verb", "#8ef"),
+    " some ",
+    ("annotated", "adj", "#faa"),
+    ("text", "noun", "#afa"),
+    " for those of ",
+    ("you", "pronoun", "#fea"),
+    " who ",
+    ("like", "verb", "#8ef"),
+    " this sort of ",
+    ("thing", "noun", "#afa"),
+    "."
+)
+
+
+#grafos 3d
+import random
+from streamlit_d3_demo import d3_line
+
+def generate_random_data(x_r, y_r):
+    return list(zip(range(x_r), [random.randint(0, y_r) for _ in range(x_r)]))
+
+d3_line(generate_random_data(20, 500), circle_radius=15, circle_color="#6495ed")
+
+# otro
+from rdflib import Graph
+from streamlit_agraph import TripleStore, agraph
+
+graph = Graph()
+graph.parse("http://www.w3.org/People/Berners-Lee/card")
+store = TripleStore()
+
+for subj, pred, obj in graph:
+    store.add_triple(subj, pred, obj, "")
+    
+agraph(list(store.getNodes()), list(store.getEdges()), config)
+
+#
+
+
+algos = GraphAlgos(store)
+algos.shortest_path("Spiderman", "Captain_Marvel")
+algos.density()
+
+#
+from streamlit_echarts import Map
+with open("USA.json", "r") as f:
+    map = Map(
+        "USA",
+        json.loads(f.read()),
+        {
+            "Alaska": {"left": -131, "top": 25, "width": 15},
+            "Hawaii": {"left": -110, "top": 28, "width": 5},
+            "Puerto Rico": {"left": -76, "top": 26, "width": 2},
+        },
+    )
+options = {...}
+st_echarts(options, map=map)
+
+
+
+#
+
+from streamlit_observable import observable
+
+@st.cache
+def get_trader_joes():
+    # a lot of code...
+    return df
+
+df = get_trader_joes()
+
+observable("Trader Joes Voronoi Map", 
+    notebook="@mbostock/u-s-voronoi-map-o-matic", 
+    targets=["map"],
+    redefine={
+        "data": df[["longitude", "latitude", "name"]].to_dict(orient="records")
+    }
+)
+
+
+from streamlit_embedcode import github_gist
+
+github_gist("https://gist.github.com/randyzwitch/be8c5e9fb5b8e7b046afebcac12e5087/")
+
 scatterplot() #borrar prueba
+
 
 def nosotros():
     # Render the h1 block, contained in a frame of size 200x200.
@@ -209,6 +357,12 @@ if page == 'scatterplot':
     scatterplot()
 if page == 'nosotros':
     nosotros()
+
+
+
+
+
+
 
 
 
