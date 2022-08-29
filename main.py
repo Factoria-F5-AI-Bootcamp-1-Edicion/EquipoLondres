@@ -37,7 +37,7 @@ from wordcloud import WordCloud, ImageColorGenerator
 import plotly.express as px
 
 # extra
-import graficas
+
 
 
 # Comienza el programa
@@ -114,7 +114,7 @@ precios_londres = st.slider("Precio locales:", 10, 1000)
 
 # print(len(leer_data['price']))
 
-for i in range(len(leer_data['id'])):
+for i in range(len(leer_data['price'])):
     print(f'iterando: {i}')
     if precios_londres >= leer_data['price'][i]:
         latitud = leer_data['latitude'][i]
@@ -300,10 +300,6 @@ if page == 'scatterplot':
     scatterplot()
 if page == 'nosotros':
     nosotros()
-
-
-# print(graficas.yuan("Chen"))
-graficas.yuan(leer_data, token)
 
 
 # nosotros()
