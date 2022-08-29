@@ -90,10 +90,13 @@ path_to_data = ('london_airbnb.csv')
 def load_data():
     df = pd.read_csv(path_to_data)
 
-    # Comienzo la limpieza de datos no definitiva
-    df.drop(["host_id", "name", "host_name", ], axis=1, inplace=True)
+    # Comienzo la Ingenieria de caracteristicas
+    df.drop(["neighbourhood_group","id", "name","host_id","host_name"], axis=1, inplace=True)
     df.dropna(how='any')
+    modaprice = df["price"].mode()[0]
+    df['price'] = df['price'].replace([0], modaprice)
     return df
+
 
 
 # guardamos los datos para usar
