@@ -51,7 +51,7 @@ with Head:
     logo = Image.open('Airbnb_logo.jpg')
     st.image(londres, caption='Sunrise by the mountains')
 
-    st.text('Ciency tu consultora de confianza.')
+    st.text('SCIENCE es sinonimo de confianza.')
 # video
     video_file = open('istockphoto-1258113642-640_adpp_is.mp4', 'rb')
     video_bytes = video_file.read()
@@ -60,7 +60,7 @@ with Head:
 # cuerpo de la pagina
 with Body:
     st.markdown(
-        'La espectativas de precios en el mercado inmobiliario de londres..')
+        'Precios de alquiler en la ciudad de londres')
 
     # visualiza imagenes
     #a1, a2, a3 = st.columns(3)
@@ -68,10 +68,7 @@ with Body:
     #a2.image(Image.open('casa.jpg'))
     #a3.image(Image.open('Airbnb_logo.jpg'))
 
-# pie de pagina
-with Footer:
-    st.header('Mapa de resultados')
-    st.text('Grafica resultante.')
+
 
 
 # DataFrame
@@ -86,9 +83,29 @@ def load_data():
     # Comienzo la Ingenieria de caracteristicas
     df.drop(["neighbourhood_group","id", "name","host_id","host_name"], axis=1, inplace=True)
     df.dropna(how='any')
+    
+    #reemplazar datos Na
+    promedio = df["reviews_per_month"].mean()
+    df["reviews_per_month"].fillna(promedio, inplace=True)
+    mode_review = df["last_review"].mode()[0]
+    df["last_review"].fillna(mode_review, inplace=True)
+
+    #eNcontrar valores en cero y reemplazarlo
     modaprice = df["price"].mode()[0]
     df['price'] = df['price'].replace([0], modaprice)
+
     return df
+
+st.title('SCIENCE STARTUD')
+
+st.markdown(
+    
+    """
+    Si estas pensando en viajar a londres y necesitas encontrar el alojamiento perfecto para ti, 
+    has llegado al lugar indicado.
+    En nuestra startup damos solucion a esto, podras buscar tu lugar ideal, al precio que mejor se adapte a ti.
+    
+          """  )
 
 
 # guardamos los datos para usar
