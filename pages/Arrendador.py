@@ -3,7 +3,7 @@ import pandas as pd
 import plotly.express as px
 from datetime import datetime
 
-# Leemos los datos
+# Leemos los datos de arrendador
 df = pd.read_csv('london_airbnb.csv')
 
 # Se preparan los datos
@@ -18,7 +18,7 @@ filtro = df[['host_name', 'name']].groupby(
     'host_name').count().sort_values(by='name', ascending=False)
 
 #titulo
-st.title("Concentrarion de arrendatarios.")
+st.title("Concentrarion de arrendadores.")
 st.markdown("### Por barrios. ")
 
 #pinta grafica 1
