@@ -1,70 +1,36 @@
+import streamlit as st
+import numpy as np
+import pandas as pd
+import seaborn as sns
+import matplotlib.pyplot as plt
+import plotly.express as px
 from datetime import datetime
 
-import streamlit as st
-from vega_datasets import data
+#df y limpieza
+df = pd.read_csv('london_airbnb.csv')
 
-from utils import chart, db
+df['host_name'].fillna("0",inplace = True)
+df['last_review'].fillna('2018-01-01',inplace = True)
+df['last_review'] = pd.to_datetime(df['last_review'],format='%Y-%m-%d')
+df['reviews_per_month'].fillna(0,inplace = True)
+df = df.drop(columns='neighbourhood_group')
 
-COMMENT_TEMPLATE_MD = """{} - {}
-> {}"""
+#st.sidebar.write("Análisis por arrendatario")
+#st.subheader('''Se puede ver que el arrendatario está relativamente concentrado.''')
+arr = df[['host_name','name']].groupby('host_name').count().sort_values(by='name', ascending=False)
+st.line_chart(arr)
+
+#st.sidebar.write("London Alojamiento Mapa")
+#st.subheader("London Alojamiento Mapa")
+map_data = pd.DataFrame(df,columns=['latitude', 'longitude'])
+st.map(map_data)
 
 
-def space(num_lines=1):
-    """Adds empty lines to the Streamlit app."""
-    for _ in range(num_lines):
-        st.write("")
+
+values = df.neighbourhood.value_counts()
+names = df.neighbourhood.unique().tolist()
+fig = px.pie(df, values=values, names=names)
+fig.update_traces(textposition='inside', textinfo='percent+label')
+st.plotly_chart(fig)
 
 
-st.set_page_config(layout="centered", page_icon="💬", page_title="Commenting app")
-
-# Data visualisation part
-
-st.title("💬 Commenting app")
-
-source = data.stocks()
-all_symbols = source.symbol.unique()
-symbols = st.multiselect("Choose stocks to visualize", all_symbols, all_symbols[:3])
-
-space(1)
-
-source = source[source.symbol.isin(symbols)]
-chart = chart.get_chart(source)
-st.altair_chart(chart, use_container_width=True)
-
-space(2)
-
-# Comments part
-
-conn = db.connect()
-comments = db.collect(conn)
-
-with st.expander("💬 Open comments"):
-
-    # Show comments
-
-    st.write("**Comments:**")
-
-    for index, entry in enumerate(comments.itertuples()):
-        st.markdown(COMMENT_TEMPLATE_MD.format(entry.name, entry.date, entry.comment))
-
-        is_last = index == len(comments) - 1
-        is_new = "just_posted" in st.session_state and is_last
-        if is_new:
-            st.success("☝️ Your comment was successfully posted.")
-
-    space(2)
-
-    # Insert comment
-
-    st.write("**Add your own comment:**")
-    form = st.form("comment")
-    name = form.text_input("Name")
-    comment = form.text_area("Comment")
-    submit = form.form_submit_button("Add comment")
-
-    if submit:
-        date = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
-        db.insert(conn, [[name, comment, date]])
-        if "just_posted" not in st.session_state:
-            st.session_state["just_posted"] = True
-        st.experimental_rerun()
