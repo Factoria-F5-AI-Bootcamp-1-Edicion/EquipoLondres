@@ -63,10 +63,10 @@ with Body:
         'La espectativas de precios en el mercado inmobiliario de londres..')
 
     # visualiza imagenes
-    a1, a2, a3 = st.columns(3)
-    a1.image(Image.open('Airbnb red.png'))
-    a2.image(Image.open('casa.jpg'))
-    a3.image(Image.open('Airbnb_logo.jpg'))
+    #a1, a2, a3 = st.columns(3)
+    #a1.image(Image.open('Airbnb red.png'))
+    #a2.image(Image.open('casa.jpg'))
+    #a3.image(Image.open('Airbnb_logo.jpg'))
 
 # pie de pagina
 with Footer:
@@ -93,12 +93,6 @@ def load_data():
 
 # guardamos los datos para usar
 leer_data = load_data()
-
-def generate_random_data(x_r, y_r):
-    return list(zip(range(x_r), [random.randint(0, y_r) for _ in range(x_r)]))
-
-d3_line(generate_random_data(20, 500),
-        circle_radius=15, circle_color="#6495ed")
 
     
 def nosotros():
@@ -144,29 +138,7 @@ def nosotros():
 
 
 ####################################################################################
-st.sidebar.title("Configuración")
-# Mostrar por barrio
-# Obtengo los elementos unicos de la columna room_type
-list = np.unique(leer_data["room_type"])
-
-if st.sidebar.checkbox("Mostrar grafica de Barrio", False, key=1):
-    fig, ax = plt.subplots(ncols=1, figsize=(18, 7))
-    sns.boxplot(y='price', x='neighbourhood', data=leer_data, ax=ax)
-    plt.xticks(rotation=90)
-    st.pyplot(fig)
-
-
-##################################################################################
-
-# Configuración del Menu
-page = st.sidebar.selectbox("Seleciona grafica B",
-                            [
-                                "Elige", "scatterplot", "nosotros"
-                            ]
-                            )
-
-if page == 'Nosotros':
-    nosotros()
+nosotros()
 
 
 # nosotros()
