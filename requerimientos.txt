@@ -1,3 +1,11 @@
+altair
+vega-datasets
+
+google-api-python-client
+google-auth
+google-auth-httplib2
+protobuf
+click==8
 altair==4.2.0
 anyio==3.6.1
 argon2-cffi==21.3.0

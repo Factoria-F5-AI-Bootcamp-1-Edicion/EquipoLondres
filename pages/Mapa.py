@@ -88,3 +88,17 @@ st_data = st_folium(mapa, width=625)
 with Footer:
     st.header('Mapa de resultados')
     st.text('Grafica resultante.')
+
+
+
+# Configuración del Menu
+page = st.sidebar.selectbox("Seleciona grafica B",
+                            [
+                                "Elige", "Barrio1", "barrio2"
+                            ]
+)
+
+if page == 'Barrio1':
+    barrio()
+else:
+    barrio()
