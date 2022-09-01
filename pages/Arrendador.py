@@ -17,16 +17,16 @@ df = df.drop(columns='neighbourhood_group')
 filtro = df[['host_name', 'name']].groupby(
     'host_name').count().sort_values(by='name', ascending=False)
 
-#titulo
+# titulo
 st.title("Concentrarion de arrendadores.")
-st.markdown("### Por barrios. ")
+st.markdown("### Arrendadores. ")
 
-#pinta grafica 1
+# pinta grafica 1
 st.line_chart(filtro)
 
 # Sacamos las localizaciones
 map_data = pd.DataFrame(df, columns=['latitude', 'longitude'])
-#titulo
+# titulo
 st.markdown("### Mapa por concentración. ")
 # pinta mapa
 st.map(map_data)
