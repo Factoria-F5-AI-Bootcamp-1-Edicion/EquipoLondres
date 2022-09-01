@@ -11,11 +11,12 @@ from streamlit_vega_lite import vega_lite_component, altair_component
 #ESTRUCTURA DE PÁGINA
 
 # Título principal
-st.title(":bar_chart: Análisis de datos")
+st.title(":bar_chart: Mi buscador")
 st.markdown("##")
 
 #Texto introductorio
-st.text('Visualizaremos nuestros principales gráficos basado en la data de Londres_airbnb.')
+st.text('Visualizaremos los datos de nuestro interés usando los filtros.')
+st.text(' Datos basados en la data de Londres_airbnb.')
 
 # Título secundario
 st.write("### DataFrame")
@@ -67,32 +68,9 @@ df_selection = df.query (
 
 st.dataframe(df_selection)
 
-#Título secundario
-st.write("### Economizar en Londres")
-
-
-#KPI's
-Precio_promedio = int(df_selection["price"].mean(),1)
 
 
 
 
 
-#Gráfico modelo
 
-import random
-from streamlit_d3_demo import d3_line
-
-def generate_random_data(x_r, y_r):
-    return list(zip(range(x_r), [random.randint(0, y_r) for _ in range(x_r)]))
-
-d3_line(generate_random_data(20, 500), circle_radius=15, circle_color="#6495ed")
-
-
-#Gráfico de la data
-
-def scatterplot():
-    fig = plt.figure(figsize=(10, 4))
-    sns.color_palette("hls", 5)
-    sns.scatterplot(data=leer_data, x="latitude", y="longitude", hue="price")
-    st.pyplot(fig)
